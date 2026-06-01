@@ -2,7 +2,9 @@
 
 ## 🧩 Epic Overview
 
-**Goal: Why (Business / User Value):**
+**Goal:** Provide reliable, auditable management of the meter fleet across its full lifecycle — onboarding, calibration, and retirement.
+
+**Why (Business / User Value):**
 
 Give field teams and meter administrators a reliable way to onboard, calibrate, and retire meters so the platform always reflects the true physical fleet. Accurate meter lifecycle data is the foundation for trustworthy readings, billing, and audits.
 
@@ -100,11 +102,40 @@ Give field teams and meter administrators a reliable way to onboard, calibrate, 
 
 ---
 
+## 🧱 Design Patterns
+
+> Core patterns (Action · Form Request · API Resource · DTO / Value Object · Domain Events + Listener · Idempotency Middleware · Audit Log) apply to **every** endpoint — see the [epics README](README.md#-design-patterns). The table below highlights the patterns most relevant to this epic.
+
+| Pattern | Justification | Applied To |
+| --- | --- | --- |
+| **Action** | Encapsulates each use case as a single-responsibility class, keeping controllers thin | All endpoints |
+| **State (State Machine)** | Meter status must change behavior and guard illegal/concurrent transitions | Deactivate Meter |
+| **Pipeline** | CSV rows flow through discrete, ordered, testable stages | Bulk Import |
+| **Batch / Queued Job** | Large imports run asynchronously without blocking the request | Bulk Import |
+| **Observer** | Lifecycle changes recorded to the audit trail without coupling domain logic | Registration · Calibration · Deactivation |
+
+### Pattern Details
+
+**State (State Machine)**
+
+- Intent: Let a meter change behavior as its lifecycle status changes.
+- Problem it solves: Prevents illegal transitions (e.g. re-activating mid-billing) and lost updates under concurrency.
+- Trade-offs:
+    - ✅ Pro: Explicit, guarded transitions and clear valid states.
+    - ⚠️ Con: More modeling overhead than a simple boolean flag.
+- Where applied in this Epic: *Deactivate Meter* (`active → inactive`), returning `409` on conflicting transitions.
+
+**Pipeline**
+
+- Intent: Process input through a sequence of independent, ordered stages.
+- Problem it solves: Keeps bulk CSV handling readable, with per-stage validation and isolation.
+- Trade-offs:
+    - ✅ Pro: Composable, individually testable stages.
+    - ⚠️ Con: Indirection that is unnecessary for trivial flows.
+- Where applied in this Epic: *Bulk Import* (parse → validate → persist → aggregate per-row results).
+
 ## ✅ Definition of Done
 
 - [ ] Does it work as the user expects?
 - [ ] Is invalid input handled?
-- [ ] Are scope/authorization checks enforced (`401` / `403`)?
-- [ ] Is idempotency honored for mutating operations?
-- [ ] Are domain events and audit records emitted?
 - [ ] Is this Production-ready?

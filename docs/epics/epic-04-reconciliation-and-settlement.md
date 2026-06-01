@@ -2,7 +2,9 @@
 
 ## 🧩 Epic Overview
 
-**Goal: Why (Business / User Value):**
+**Goal:** Close the financial loop by matching payments to invoices and settling totals per participant.
+
+**Why (Business / User Value):**
 
 Close the financial loop by matching incoming payments to invoices and calculating settlement totals per participant. Accurate reconciliation keeps the books correct and gives finance confidence in revenue figures.
 
@@ -77,11 +79,40 @@ Close the financial loop by matching incoming payments to invoices and calculati
 
 ---
 
+## 🧱 Design Patterns
+
+> Core patterns (Action · Form Request · API Resource · DTO / Value Object · Domain Events + Listener · Idempotency Middleware · Audit Log) apply to **every** endpoint — see the [epics README](README.md#-design-patterns). The table below highlights the patterns most relevant to this epic.
+
+| Pattern | Justification | Applied To |
+| --- | --- | --- |
+| **Action** | Encapsulates each use case as a single-responsibility class, keeping controllers thin | All endpoints |
+| **Strategy** | Swappable matching heuristics (by reference, amount, fuzzy) | Import Bank Statement |
+| **Chain of Responsibility** | Try heuristics in sequence, falling through to manual match | Import Bank Statement → Manual Match |
+| **Pipeline** | Statement import flows through ordered stages | Import Bank Statement |
+| **Aggregator** | Sum totals per participant for a period | Generate Settlement Summary |
+
+### Pattern Details
+
+**Chain of Responsibility**
+
+- Intent: Pass a request along a chain of handlers until one handles it.
+- Problem it solves: Multiple match heuristics must be tried in order, with unmatched entries falling through to manual reconciliation.
+- Trade-offs:
+    - ✅ Pro: Decoupled, independently orderable handlers.
+    - ⚠️ Con: Harder to trace which handler ultimately matched.
+- Where applied in this Epic: the auto-match heuristic chain in *Import Bank Statement*, ending at *Manual Reconciliation Match*.
+
+**Strategy**
+
+- Intent: Define a family of interchangeable matching algorithms.
+- Problem it solves: Payments match invoices by different signals (reference, amount, fuzzy name).
+- Trade-offs:
+    - ✅ Pro: Add or tune heuristics independently of the chain.
+    - ⚠️ Con: Extra indirection and configuration.
+- Where applied in this Epic: each matching heuristic used during reconciliation.
+
 ## ✅ Definition of Done
 
 - [ ] Does it work as the user expects?
 - [ ] Is invalid input handled?
-- [ ] Are scope/authorization checks enforced (`401` / `403`)?
-- [ ] Is idempotency honored for mutating operations?
-- [ ] Are domain events and audit records emitted?
 - [ ] Is this Production-ready?

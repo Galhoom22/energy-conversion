@@ -2,7 +2,9 @@
 
 ## 🧩 Epic Overview
 
-**Goal: Why (Business / User Value):**
+**Goal:** Turn raw consumption into accurate, defensible revenue through tariffs, simulation, invoicing, and exports.
+
+**Why (Business / User Value):**
 
 Let billing teams define pricing, model the impact of tariff changes before committing, generate invoices reliably, and export billing outputs. This turns raw consumption into accurate, defensible revenue.
 
@@ -112,11 +114,40 @@ Let billing teams define pricing, model the impact of tariff changes before comm
 
 ---
 
+## 🧱 Design Patterns
+
+> Core patterns (Action · Form Request · API Resource · DTO / Value Object · Domain Events + Listener · Idempotency Middleware · Audit Log) apply to **every** endpoint — see the [epics README](README.md#-design-patterns). The table below highlights the patterns most relevant to this epic.
+
+| Pattern | Justification | Applied To |
+| --- | --- | --- |
+| **Action** | Encapsulates each use case as a single-responsibility class, keeping controllers thin | All endpoints |
+| **Strategy** | Interchangeable time-of-use / rate-resolution algorithms | Create Tariff · Run Billing Job |
+| **Pipeline** | Billing moves eligible meters through ordered stages | Run Billing Job |
+| **Batch / Queued Job** | Long-running billing & simulation runs execute asynchronously | Run Billing Job · Manage Tariff Simulations |
+| **Builder** | Assemble invoice & CSV documents from line items | Run Billing Job · Export Billing CSV |
+
+### Pattern Details
+
+**Strategy**
+
+- Intent: Define a family of interchangeable pricing algorithms behind a common interface.
+- Problem it solves: Time-of-use windows and rate selection vary per tariff and must evolve without rewriting billing.
+- Trade-offs:
+    - ✅ Pro: Add new tariff types without changing the billing engine.
+    - ⚠️ Con: More abstraction and types to maintain.
+- Where applied in this Epic: tariff rule resolution in *Create Tariff* and *Run Billing Job*.
+
+**Builder**
+
+- Intent: Construct a complex object step by step.
+- Problem it solves: Invoices and CSV exports are assembled from many line items and sections.
+- Trade-offs:
+    - ✅ Pro: Clear, reusable assembly logic for documents.
+    - ⚠️ Con: Overkill for trivial, flat outputs.
+- Where applied in this Epic: invoice generation (*Run Billing Job*) and *Export Billing CSV*.
+
 ## ✅ Definition of Done
 
 - [ ] Does it work as the user expects?
 - [ ] Is invalid input handled?
-- [ ] Are scope/authorization checks enforced (`401` / `403`)?
-- [ ] Is idempotency honored for mutating operations?
-- [ ] Are domain events and audit records emitted?
 - [ ] Is this Production-ready?
