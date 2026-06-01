@@ -11,3 +11,14 @@ This folder breaks the [Complete API specification](../Complete_APIs.md) into de
 | [05 — Reporting, Audit & Integration](epic-05-reporting-audit-and-integration.md) | Compliance, auditability, webhooks | Export Regulatory Report · Get Audit Trail · Subscribe Webhooks |
 
 All 20 APIs from the source specification are covered across these five epics.
+
+## 🔁 Shared Conventions
+
+These cross-cutting requirements apply to every epic and underpin each story's acceptance criteria:
+
+- **Auth** — Bearer token via [Laravel Sanctum](https://laravel.com/docs/sanctum). The `energy_conversion.write` scope referenced in stories maps to a Sanctum **token ability**. Missing/insufficient ability → `403`; unauthenticated → `401`.
+- **Organization context** — every request carries an `organizationId`; access is scoped to it.
+- **Idempotency** — mutating endpoints honor the `Idempotency-Key` header and must not double-process.
+- **Side effects** — successful mutations emit a domain event and write an audit record.
+
+See the [main README](../../README.md) and [Complete API specification](../Complete_APIs.md) for request/response envelopes and full schemas.

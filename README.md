@@ -40,7 +40,7 @@ npm install
 cp .env.example .env
 php artisan key:generate
 
-# 3. Run migrations
+# 3. Run migrations (includes Sanctum's personal_access_tokens table)
 php artisan migrate
 
 # 4. Start the dev environment (server, queue, logs, vite)
@@ -49,11 +49,19 @@ composer run dev
 
 ## 🔌 API
 
-All endpoints are versioned under `/api/v1/energy_conversion/`.
+All endpoints are versioned under `/api/v1/energy_conversion/`. Routes live in `routes/api.php` and are served under the `/api` prefix with the `api` middleware group.
+
+### 🔑 Authentication
+
+The API uses **Laravel Sanctum** bearer tokens. Send the token on every request:
+
+```http
+Authorization: Bearer <token>
+```
 
 ### 🔐 Conventions
 
-- **Auth** — OAuth2 Bearer token. Mutating endpoints require the `energy_conversion.write` scope.
+- **Auth** — Bearer token via [Laravel Sanctum](https://laravel.com/docs/sanctum). Mutating endpoints require the `energy_conversion.write` scope.
 - **Organization context** — every request must include an `organizationId` in the payload.
 - **Idempotency** — mutating operations honor the `Idempotency-Key` header.
 - **Side effects** — successful operations emit a domain event and write an audit record.
