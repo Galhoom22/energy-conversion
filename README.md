@@ -29,6 +29,35 @@ This platform exposes a versioned REST API for the full energy metering lifecycl
 | Code Style | Laravel Pint |
 | Tooling | Laravel Boost · Pail · Prompts |
 
+## 🏛️ Architecture
+
+The project follows a **domain-oriented modular monolith** — a single Laravel application organized by business domain rather than by technical type. Boundaries are enforced by convention: a domain exposes behavior only through its **Actions** and **Events**, and never reaches into another domain's internals.
+
+```
+app/
+├── Domain/                  # business logic, grouped by domain
+│   ├── Metering/            # Epics 01 + 02
+│   ├── Billing/             # Epic 03
+│   ├── Reconciliation/      # Epic 04
+│   └── Compliance/          # Epic 05
+│       ├── Models/
+│       ├── Actions/         # one use case per endpoint
+│       ├── Events/
+│       └── Data/            # DTOs / value objects
+├── Http/
+│   └── Api/V1/              # versioned HTTP layer
+│       ├── Controllers/     # thin: authorize → validate → delegate to Action
+│       ├── Requests/        # Form Requests (validation + authorization)
+│       └── Resources/       # API Resources (response shaping)
+└── Support/                 # cross-cutting: idempotency, audit recorder
+
+routes/
+├── api.php                  # loads the versioned domain route files
+└── api/v1/                  # one route file per domain
+```
+
+**Why this architecture:** it maps 1:1 to the [epics](docs/epics/README.md), keeps domain boundaries clear without extra dependencies, and stays easy to evolve into separate modules or services later if scale demands it.
+
 ## 🚀 Getting Started
 
 ```bash
