@@ -124,6 +124,18 @@ All endpoints are versioned under `/api/v1/energy_conversion/`.
 
 > 📚 Full request/response schemas, business rules, and error details live in [`docs/Complete_APIs.md`](docs/Complete_APIs.md).
 
+## 🗂️ Epics
+
+The API is grouped into five delivery-ready epics — each with features, user stories, acceptance criteria, and tasks. Browse them in [`docs/epics`](docs/epics/README.md).
+
+| Epic | Theme | APIs |
+| :--: | ----- | :--: |
+| [01 — Meter Management](docs/epics/epic-01-meter-management.md) | Onboard, calibrate, and retire meters | 4 |
+| [02 — Readings & Consumption](docs/epics/epic-02-readings-and-consumption.md) | Capture, correct, and surface consumption | 5 |
+| [03 — Tariff & Billing](docs/epics/epic-03-tariff-and-billing.md) | Pricing, simulation, invoicing, export | 5 |
+| [04 — Reconciliation & Settlement](docs/epics/epic-04-reconciliation-and-settlement.md) | Match payments and settle participants | 3 |
+| [05 — Reporting, Audit & Integration](docs/epics/epic-05-reporting-audit-and-integration.md) | Compliance, auditability, webhooks | 3 |
+
 ## 🧪 Testing
 
 ```bash
