@@ -60,6 +60,8 @@ routes/
 
 **Why this architecture:** it maps 1:1 to the [epics](docs/epics/README.md), keeps domain boundaries clear without extra dependencies, and stays easy to evolve into separate modules or services later if scale demands it. See the [epics design-patterns guidance](docs/epics/README.md#-design-patterns) for when to escalate beyond the default.
 
+**Data model:** core entities and their relationships are mapped in the lightweight [ERD](docs/ERD.md) (keys only) — column-level detail is added per slice in migrations as each epic is built.
+
 ## 🚀 Getting Started
 
 ```bash
