@@ -29,75 +29,75 @@ erDiagram
     INVOICE ||--o{ SETTLEMENT_LINE : "contributes to"
 
     ORGANIZATION {
-        id PK
+        bigint id PK
     }
     USER {
-        id PK
-        organization_id FK
+        bigint id PK
+        bigint organization_id FK
     }
     METER {
-        id PK
-        organization_id FK
-        status "active | inactive"
+        bigint id PK
+        bigint organization_id FK
+        string status "active | inactive"
     }
     READING {
-        id PK
-        meter_id FK
+        bigint id PK
+        bigint meter_id FK
     }
     CALIBRATION {
-        id PK
-        meter_id FK
+        bigint id PK
+        bigint meter_id FK
     }
     TARIFF {
-        id PK
-        organization_id FK
+        bigint id PK
+        bigint organization_id FK
     }
     TARIFF_SIMULATION {
-        id PK
-        tariff_id FK
-        meter_id FK
+        bigint id PK
+        bigint tariff_id FK
+        bigint meter_id FK
     }
     INVOICE {
-        id PK
-        meter_id FK
-        tariff_id FK
-        organization_id FK
+        bigint id PK
+        bigint meter_id FK
+        bigint tariff_id FK
+        bigint organization_id FK
     }
     BANK_STATEMENT {
-        id PK
-        organization_id FK
+        bigint id PK
+        bigint organization_id FK
     }
     PAYMENT {
-        id PK
-        organization_id FK
-        bank_statement_id FK
+        bigint id PK
+        bigint organization_id FK
+        bigint bank_statement_id FK
     }
     RECONCILIATION_MATCH {
-        id PK
-        invoice_id FK
-        payment_id FK
-        matched_by "auto | manual"
+        bigint id PK
+        bigint invoice_id FK
+        bigint payment_id FK
+        string matched_by "auto | manual"
     }
     SETTLEMENT {
-        id PK
-        organization_id FK
-        period
+        bigint id PK
+        bigint organization_id FK
+        string period
     }
     SETTLEMENT_LINE {
-        id PK
-        settlement_id FK
-        invoice_id FK
+        bigint id PK
+        bigint settlement_id FK
+        bigint invoice_id FK
     }
     WEBHOOK_SUBSCRIPTION {
-        id PK
-        organization_id FK
-        event "e.g. invoice.created"
+        bigint id PK
+        bigint organization_id FK
+        string event "e.g. invoice.created"
     }
     AUDIT_RECORD {
-        id PK
-        organization_id FK
-        auditable_type "polymorphic"
-        auditable_id "polymorphic"
+        bigint id PK
+        bigint organization_id FK
+        string auditable_type "polymorphic"
+        bigint auditable_id "polymorphic"
     }
 ```
 
