@@ -86,36 +86,20 @@ Meet regulatory obligations, prove the integrity of meter records, and let exter
 
 ## 🧱 Design Patterns
 
-> Core patterns (Action · Form Request · API Resource · DTO / Value Object · Domain Events + Listener · Idempotency Middleware · Audit Log) apply to **every** endpoint — see the [epics README](README.md#-design-patterns). The table below highlights the patterns most relevant to this epic.
+> **Convention-first.** Default to plain Laravel (Controller → Form Request → Eloquent → API Resource) as described in the [epics README](README.md#-design-patterns). The patterns below are **candidates** — adopt one only when the listed trigger is actually true, not preemptively.
 
-| Pattern | Justification | Applied To |
+| Candidate pattern | Adopt only when… | Relevant to |
 | --- | --- | --- |
-| **Action** | Encapsulates each use case as a single-responsibility class, keeping controllers thin | All endpoints |
-| **Publish / Subscribe** | Deliver platform events to external subscribers without coupling | Subscribe Webhooks |
-| **Audit Log (append-only)** | Immutable, queryable change history | Get Audit Trail |
-| **Adapter** | Map internal data to required regulatory formats | Export Regulatory Report |
-| **Builder** | Assemble report documents section by section | Export Regulatory Report |
-| **Batch / Queued Job** | Async report generation & webhook delivery with retries | Export Report · Subscribe Webhooks |
+| **Events + Queued delivery** | Webhook delivery needs decoupling and retries (use Laravel events/jobs, not a custom bus) | Subscribe Webhooks |
+| **Adapter** | A regulatory format differs enough from internal models to warrant isolating the mapping | Export Regulatory Report |
+| **Batch / Queued Job** | Report generation or webhook delivery is slow enough to need async + retries | Export Report · Subscribe Webhooks |
+| **Dedicated Action** | Report/subscription logic outgrows a controller method | Export Report · Subscribe Webhooks |
 
-### Pattern Details
+### Default vs. when-to-escalate
 
-**Publish / Subscribe**
-
-- Intent: Broadcast events to interested subscribers without the publisher knowing who consumes them.
-- Problem it solves: External systems need to react to `invoice.created` without the platform being coupled to them.
-- Trade-offs:
-    - ✅ Pro: Decoupled, extensible integration; new subscribers add no core changes.
-    - ⚠️ Con: Delivery, retry, and observability complexity (at-least-once, ordering).
-- Where applied in this Epic: *Subscribe Webhooks For Invoices*.
-
-**Adapter**
-
-- Intent: Convert one interface or data format into another the client expects.
-- Problem it solves: Regulators require specific external file formats that differ from internal models.
-- Trade-offs:
-    - ✅ Pro: Isolates format concerns; internal models stay clean.
-    - ⚠️ Con: An extra mapping layer to maintain per format.
-- Where applied in this Epic: *Export Regulatory Report*.
+- **Get Audit Trail For Meter** — a read over existing audit records: thin controller + scoped Eloquent query + API Resource. The audit log itself is written by listeners on mutations (already a shared convention), not a new pattern here.
+- **Subscribe Webhooks For Invoices** — persist the subscription with a Form Request; deliver `invoice.created` via a Laravel event + queued listener. Add retry/backoff only as delivery reliability needs grow.
+- **Export Regulatory Report** — build the file with framework helpers first; introduce an Adapter per format **only when** a real format mismatch justifies it.
 
 ## ✅ Definition of Done
 

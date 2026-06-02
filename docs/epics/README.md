@@ -23,18 +23,29 @@ These cross-cutting requirements apply to every epic and underpin each story's a
 
 ## 🧱 Design Patterns
 
-The project uses a **domain-oriented modular monolith** (see the [main README](../../README.md#-architecture)). The following **core patterns apply to every endpoint** and are assumed by each epic — individual epics list only their *additional*, situational patterns.
+The project uses a **domain-oriented modular monolith** (see the [main README](../../README.md#-architecture)), but **convention-first is the rule**: reach for plain Laravel before any custom abstraction.
 
-| Pattern | Role |
-| ------- | ---- |
-| **Action** | One class per use case (e.g. `RegisterMeter`); holds the business logic and keeps controllers thin. |
-| **Form Request** | Validation (`rules()`) + authorization (`authorize()` checks the Sanctum ability). |
-| **API Resource** | Shapes the standard response envelope (`id`, `status`, `processedAt`, `details`). |
-| **DTO / Value Object** | Carries validated input into Actions as typed data instead of raw arrays. |
-| **Domain Events + Listener** | Each successful mutation emits an event; listeners handle side effects (audit, webhooks) and decouple domains. |
-| **Idempotency Middleware** | Wraps mutating requests to honor the `Idempotency-Key` header. |
-| **Audit Log** | Append-only audit records written by listeners across all domains. |
+### Default approach (use this first)
 
-Situational patterns (Strategy, Pipeline, State, Specification, Pub/Sub, Batch Jobs, etc.) are documented in each epic's own **🧱 Design Patterns** section.
+Build each endpoint with built-in framework features:
+
+- **Controller** (thin) → **Form Request** (validation + `authorize()` for the Sanctum ability) → **Eloquent** → **API Resource** (response envelope).
+- Idempotency for mutating endpoints via a single shared middleware (`Idempotency-Key`).
+- Audit + cross-domain reactions via Laravel **events/listeners** — but only where a mutation actually needs them.
+
+This covers the majority of the 20 endpoints with no extra layers.
+
+### Introduce more only when justified
+
+Heavier building blocks are **optional and conditional** — add one only when a specific story's complexity makes its value clear and immediate (per the Engineering Standards: YAGNI, prefer framework conventions, justify every abstraction):
+
+| Building block | Adopt only when… |
+| -------------- | ---------------- |
+| **Dedicated Action class** | A use case has real orchestration beyond a simple Eloquent write; trivial CRUD stays in the controller. |
+| **DTO / Value Object** | Input is complex/reused enough that typed data beats `$request->validated()`. |
+| **Domain Event + Listener** | A mutation has side effects another domain must react to (audit, webhooks). Reads never emit events. |
+| **Strategy / Pipeline / Chain / etc.** | There is genuinely more than one algorithm or a multi-stage flow *today* — not hypothetically. |
+
+Each epic's **🧱 Design Patterns** section lists *candidate* patterns for its stories with an explicit adoption trigger. Treat them as "use if/when needed," not as required scaffolding.
 
 See the [main README](../../README.md) and [Complete API specification](../Complete_APIs.md) for request/response envelopes and full schemas.

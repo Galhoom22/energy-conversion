@@ -104,35 +104,20 @@ Give field teams and meter administrators a reliable way to onboard, calibrate, 
 
 ## 🧱 Design Patterns
 
-> Core patterns (Action · Form Request · API Resource · DTO / Value Object · Domain Events + Listener · Idempotency Middleware · Audit Log) apply to **every** endpoint — see the [epics README](README.md#-design-patterns). The table below highlights the patterns most relevant to this epic.
+> **Convention-first.** Default to plain Laravel (Controller → Form Request → Eloquent → API Resource) as described in the [epics README](README.md#-design-patterns). The patterns below are **candidates** — adopt one only when the listed trigger is actually true, not preemptively.
 
-| Pattern | Justification | Applied To |
+| Candidate pattern | Adopt only when… | Relevant to |
 | --- | --- | --- |
-| **Action** | Encapsulates each use case as a single-responsibility class, keeping controllers thin | All endpoints |
-| **State (State Machine)** | Meter status must change behavior and guard illegal/concurrent transitions | Deactivate Meter |
-| **Pipeline** | CSV rows flow through discrete, ordered, testable stages | Bulk Import |
-| **Batch / Queued Job** | Large imports run asynchronously without blocking the request | Bulk Import |
-| **Observer** | Lifecycle changes recorded to the audit trail without coupling domain logic | Registration · Calibration · Deactivation |
+| **State (State Machine)** | Meter status needs more than a boolean and must guard illegal/concurrent transitions | Deactivate Meter |
+| **Pipeline** | Bulk import genuinely needs multiple ordered, independently-tested stages | Bulk Import |
+| **Batch / Queued Job** | Imports are large enough that synchronous handling times out or blocks the request | Bulk Import |
+| **Dedicated Action + Domain Event** | A write has real orchestration or side effects another domain must react to (audit) | Register · Calibrate · Deactivate |
 
-### Pattern Details
+### Default vs. when-to-escalate
 
-**State (State Machine)**
-
-- Intent: Let a meter change behavior as its lifecycle status changes.
-- Problem it solves: Prevents illegal transitions (e.g. re-activating mid-billing) and lost updates under concurrency.
-- Trade-offs:
-    - ✅ Pro: Explicit, guarded transitions and clear valid states.
-    - ⚠️ Con: More modeling overhead than a simple boolean flag.
-- Where applied in this Epic: *Deactivate Meter* (`active → inactive`), returning `409` on conflicting transitions.
-
-**Pipeline**
-
-- Intent: Process input through a sequence of independent, ordered stages.
-- Problem it solves: Keeps bulk CSV handling readable, with per-stage validation and isolation.
-- Trade-offs:
-    - ✅ Pro: Composable, individually testable stages.
-    - ⚠️ Con: Indirection that is unnecessary for trivial flows.
-- Where applied in this Epic: *Bulk Import* (parse → validate → persist → aggregate per-row results).
+- **Register Meter / Upload Calibration** — start as a thin controller + Form Request + Eloquent write + API Resource. Extract an Action only if logic grows beyond a simple persist.
+- **Deactivate Meter** — a status column + a guarded update is enough; introduce an explicit State Machine **only if** transition rules multiply.
+- **Bulk Import** — begin with a straightforward validated loop; escalate to a Pipeline and/or queued Batch job **only when** file sizes or stage complexity demand it.
 
 ## ✅ Definition of Done
 

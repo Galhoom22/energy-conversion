@@ -81,35 +81,20 @@ Close the financial loop by matching incoming payments to invoices and calculati
 
 ## 🧱 Design Patterns
 
-> Core patterns (Action · Form Request · API Resource · DTO / Value Object · Domain Events + Listener · Idempotency Middleware · Audit Log) apply to **every** endpoint — see the [epics README](README.md#-design-patterns). The table below highlights the patterns most relevant to this epic.
+> **Convention-first.** Default to plain Laravel (Controller → Form Request → Eloquent → API Resource) as described in the [epics README](README.md#-design-patterns). The patterns below are **candidates** — adopt one only when the listed trigger is actually true, not preemptively.
 
-| Pattern | Justification | Applied To |
+| Candidate pattern | Adopt only when… | Relevant to |
 | --- | --- | --- |
-| **Action** | Encapsulates each use case as a single-responsibility class, keeping controllers thin | All endpoints |
-| **Strategy** | Swappable matching heuristics (by reference, amount, fuzzy) | Import Bank Statement |
-| **Chain of Responsibility** | Try heuristics in sequence, falling through to manual match | Import Bank Statement → Manual Match |
-| **Pipeline** | Statement import flows through ordered stages | Import Bank Statement |
-| **Aggregator** | Sum totals per participant for a period | Generate Settlement Summary |
+| **Strategy** | More than one matching heuristic (reference, amount, fuzzy) actually exists | Import Bank Statement |
+| **Chain of Responsibility** | Multiple heuristics must run in sequence with fall-through | Import Bank Statement → Manual Match |
+| **Pipeline** | Statement import genuinely needs multiple ordered stages | Import Bank Statement |
+| **Dedicated Action** | Matching/settlement logic outgrows a controller method | Import · Manual Match · Settlement |
 
-### Pattern Details
+### Default vs. when-to-escalate
 
-**Chain of Responsibility**
-
-- Intent: Pass a request along a chain of handlers until one handles it.
-- Problem it solves: Multiple match heuristics must be tried in order, with unmatched entries falling through to manual reconciliation.
-- Trade-offs:
-    - ✅ Pro: Decoupled, independently orderable handlers.
-    - ⚠️ Con: Harder to trace which handler ultimately matched.
-- Where applied in this Epic: the auto-match heuristic chain in *Import Bank Statement*, ending at *Manual Reconciliation Match*.
-
-**Strategy**
-
-- Intent: Define a family of interchangeable matching algorithms.
-- Problem it solves: Payments match invoices by different signals (reference, amount, fuzzy name).
-- Trade-offs:
-    - ✅ Pro: Add or tune heuristics independently of the chain.
-    - ⚠️ Con: Extra indirection and configuration.
-- Where applied in this Epic: each matching heuristic used during reconciliation.
+- **Manual Reconciliation Match** — a single guarded update linking payment↔invoice (`409` on conflict); a controller + Form Request is enough.
+- **Generate Settlement Summary** — start with a grouped Eloquent/DB aggregate query; no special pattern needed for simple per-participant totals.
+- **Import Bank Statement** — begin with one matching rule. Introduce Strategy/Chain of Responsibility **only when** a second heuristic genuinely exists; escalate to a queued job only if statements are large.
 
 ## ✅ Definition of Done
 

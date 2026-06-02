@@ -31,22 +31,24 @@ This platform exposes a versioned REST API for the full energy metering lifecycl
 
 ## 🏛️ Architecture
 
-The project follows a **domain-oriented modular monolith** — a single Laravel application organized by business domain rather than by technical type. Boundaries are enforced by convention: a domain exposes behavior only through its **Actions** and **Events**, and never reaches into another domain's internals.
+The project follows a **domain-oriented modular monolith** — a single Laravel application organized by business domain rather than by technical type.
+
+**Convention-first.** The default for every endpoint is plain Laravel: a thin **Controller** → **Form Request** (validation + authorization) → **Eloquent** → **API Resource** (response shaping). Heavier building blocks (dedicated Action classes, DTOs, domain events, Strategy/Pipeline, queued jobs) are introduced **only when a specific use case justifies them** — never preemptively. Domains stay decoupled by communicating through events rather than reaching into each other's internals.
 
 ```
 app/
-├── Domain/                  # business logic, grouped by domain
+├── Domain/                  # domain code, grouped by business domain
 │   ├── Metering/            # Epics 01 + 02
 │   ├── Billing/             # Epic 03
 │   ├── Reconciliation/      # Epic 04
 │   └── Compliance/          # Epic 05
-│       ├── Models/
-│       ├── Actions/         # one use case per endpoint
-│       ├── Events/
-│       └── Data/            # DTOs / value objects
+│       ├── Models/          # Eloquent models (the default home for domain logic)
+│       ├── Actions/         # added only when a use case has real orchestration
+│       ├── Events/          # added only when another domain must react
+│       └── Data/            # DTOs / value objects, when typed input adds value
 ├── Http/
 │   └── Api/V1/              # versioned HTTP layer
-│       ├── Controllers/     # thin: authorize → validate → delegate to Action
+│       ├── Controllers/     # thin: authorize → validate → respond
 │       ├── Requests/        # Form Requests (validation + authorization)
 │       └── Resources/       # API Resources (response shaping)
 └── Support/                 # cross-cutting: idempotency, audit recorder
@@ -56,7 +58,7 @@ routes/
 └── api/v1/                  # one route file per domain
 ```
 
-**Why this architecture:** it maps 1:1 to the [epics](docs/epics/README.md), keeps domain boundaries clear without extra dependencies, and stays easy to evolve into separate modules or services later if scale demands it.
+**Why this architecture:** it maps 1:1 to the [epics](docs/epics/README.md), keeps domain boundaries clear without extra dependencies, and stays easy to evolve into separate modules or services later if scale demands it. See the [epics design-patterns guidance](docs/epics/README.md#-design-patterns) for when to escalate beyond the default.
 
 ## 🚀 Getting Started
 

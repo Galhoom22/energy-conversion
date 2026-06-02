@@ -118,35 +118,20 @@ Capture, correct, and surface consumption data accurately. Reliable readings pow
 
 ## 🧱 Design Patterns
 
-> Core patterns (Action · Form Request · API Resource · DTO / Value Object · Domain Events + Listener · Idempotency Middleware · Audit Log) apply to **every** endpoint — see the [epics README](README.md#-design-patterns). The table below highlights the patterns most relevant to this epic.
+> **Convention-first.** Default to plain Laravel (Controller → Form Request → Eloquent → API Resource) as described in the [epics README](README.md#-design-patterns). The patterns below are **candidates** — adopt one only when the listed trigger is actually true, not preemptively.
 
-| Pattern | Justification | Applied To |
+| Candidate pattern | Adopt only when… | Relevant to |
 | --- | --- | --- |
-| **Action** | Encapsulates each use case as a single-responsibility class, keeping controllers thin | All endpoints |
-| **Batch / Queued Job** | Large reading batches are processed asynchronously and idempotently | Ingest Readings Batch |
-| **Specification** | Anomaly rules expressed as composable, testable predicates | Detect Negative Consumption |
-| **Strategy** | Interchangeable detection thresholds per meter type or anomaly class | Detect Negative Consumption |
-| **Query Object** | Encapsulates organization-scoped read queries | Query Consumption · Reading Telemetry |
+| **Batch / Queued Job** | Reading batches are large enough that synchronous storage blocks the request | Ingest Readings Batch |
+| **Specification** | Anomaly rules grow numerous/combinable enough that inline conditionals become unclear | Detect Negative Consumption |
+| **Strategy** | More than one detection threshold/algorithm genuinely exists today | Detect Negative Consumption |
+| **Dedicated Action** | A write has orchestration beyond a simple persist/update | Ingest · Correct Reading |
 
-### Pattern Details
+### Default vs. when-to-escalate
 
-**Specification**
-
-- Intent: Encapsulate a business rule as an object that can be evaluated and combined with others.
-- Problem it solves: Keeps anomaly-detection rules isolated, testable, and combinable instead of buried in conditionals.
-- Trade-offs:
-    - ✅ Pro: Reusable, composable rules with clear unit tests.
-    - ⚠️ Con: More classes than inline checks for simple rules.
-- Where applied in this Epic: *Detect Negative Consumption* anomaly rules.
-
-**Strategy**
-
-- Intent: Define a family of interchangeable algorithms behind a common interface.
-- Problem it solves: Different meter types and anomaly classes need different detection thresholds/logic.
-- Trade-offs:
-    - ✅ Pro: Swap or add detection logic without touching callers.
-    - ⚠️ Con: Extra indirection and more types to manage.
-- Where applied in this Epic: detection/threshold selection in *Detect Negative Consumption*.
+- **Query Customer Consumption / Get Reading Telemetry** — these are reads: a thin controller + Form Request + scoped Eloquent query + API Resource is sufficient. No Action, DTO, or event needed.
+- **Ingest Readings Batch** — start with a validated insert; escalate to a queued Batch job only when volume requires it.
+- **Detect Negative Consumption** — begin with a simple guard/query; introduce Specification/Strategy **only if** the rule set actually multiplies.
 
 ## ✅ Definition of Done
 

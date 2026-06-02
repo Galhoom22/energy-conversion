@@ -116,35 +116,22 @@ Let billing teams define pricing, model the impact of tariff changes before comm
 
 ## 🧱 Design Patterns
 
-> Core patterns (Action · Form Request · API Resource · DTO / Value Object · Domain Events + Listener · Idempotency Middleware · Audit Log) apply to **every** endpoint — see the [epics README](README.md#-design-patterns). The table below highlights the patterns most relevant to this epic.
+> **Convention-first.** Default to plain Laravel (Controller → Form Request → Eloquent → API Resource) as described in the [epics README](README.md#-design-patterns). The patterns below are **candidates** — adopt one only when the listed trigger is actually true, not preemptively. This is the most logic-heavy epic, so escalation is more likely here than elsewhere — but still demand a concrete justification.
 
-| Pattern | Justification | Applied To |
+| Candidate pattern | Adopt only when… | Relevant to |
 | --- | --- | --- |
-| **Action** | Encapsulates each use case as a single-responsibility class, keeping controllers thin | All endpoints |
-| **Strategy** | Interchangeable time-of-use / rate-resolution algorithms | Create Tariff · Run Billing Job |
-| **Pipeline** | Billing moves eligible meters through ordered stages | Run Billing Job |
-| **Batch / Queued Job** | Long-running billing & simulation runs execute asynchronously | Run Billing Job · Manage Tariff Simulations |
-| **Builder** | Assemble invoice & CSV documents from line items | Run Billing Job · Export Billing CSV |
+| **Dedicated Action** | Billing/tariff logic clearly outgrows a controller method | Create Tariff · Run Billing Job |
+| **Strategy** | More than one rate-resolution rule actually exists | Create Tariff · Run Billing Job |
+| **Pipeline** | Billing genuinely needs multiple ordered, testable stages | Run Billing Job |
+| **Batch / Queued Job** | Billing/simulation runs are long enough to need async execution | Run Billing Job · Manage Tariff Simulations |
+| **Builder** | Invoice/CSV assembly is complex enough that inline building gets unclear | Run Billing Job · Export Billing CSV |
 
-### Pattern Details
+### Default vs. when-to-escalate
 
-**Strategy**
-
-- Intent: Define a family of interchangeable pricing algorithms behind a common interface.
-- Problem it solves: Time-of-use windows and rate selection vary per tariff and must evolve without rewriting billing.
-- Trade-offs:
-    - ✅ Pro: Add new tariff types without changing the billing engine.
-    - ⚠️ Con: More abstraction and types to maintain.
-- Where applied in this Epic: tariff rule resolution in *Create Tariff* and *Run Billing Job*.
-
-**Builder**
-
-- Intent: Construct a complex object step by step.
-- Problem it solves: Invoices and CSV exports are assembled from many line items and sections.
-- Trade-offs:
-    - ✅ Pro: Clear, reusable assembly logic for documents.
-    - ⚠️ Con: Overkill for trivial, flat outputs.
-- Where applied in this Epic: invoice generation (*Run Billing Job*) and *Export Billing CSV*.
+- **Create Tariff** — start with a Form Request + Eloquent write; add a Strategy for rate resolution **only when** a second rule type appears.
+- **Simulate Tariff On Meter** — a read-only calculation; keep it a focused service/method that never mutates billing state.
+- **Run Billing Job** — likely warrants a dedicated Action and a queued job given its orchestration; introduce a Pipeline only if stages multiply.
+- **Export Billing CSV** — use Laravel's CSV/streamed-response helpers before any Builder abstraction.
 
 ## ✅ Definition of Done
 
