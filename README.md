@@ -167,7 +167,7 @@ Authorization: Bearer <token>
 
 ## 🗂️ Epics
 
-The API is grouped into five delivery-ready epics — each with features, user stories, acceptance criteria, and tasks. Browse them in [`docs/epics`](docs/epics/README.md).
+The API is grouped into five delivery-ready epics. Each epic doc follows the same right-sized template — **Overview**, **Features → User Stories** (acceptance criteria + tasks), **Design Patterns** (applied vs. deferred), **Testing** (Pest tests mapped to criteria + edge cases), and **Definition of Done**. Browse them in [`docs/epics`](docs/epics/README.md).
 
 | Epic | Theme | APIs |
 | :--: | ----- | :--: |
