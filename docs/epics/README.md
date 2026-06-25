@@ -21,31 +21,33 @@ These cross-cutting requirements apply to every epic and underpin each story's a
 - **Idempotency** — mutating endpoints honor the `Idempotency-Key` header and must not double-process.
 - **Side effects** — successful mutations emit a domain event and write an audit record.
 
+## 📐 Epic Structure
+
+Every epic doc follows the same right-sized template — only the sections that earn their place for this API:
+
+- **🔍 Overview** — goal, business/user value, success metric, out of scope.
+- **🧩 Features → User Stories** — each with **Acceptance Criteria** and **Tasks**.
+- **🏗️ Design Patterns** — patterns *actually applied* (with justification) plus a **Deferred** table listing candidates and the concrete trigger that would justify them.
+- **🧪 Testing** — Pest feature tests mapped one-to-one to acceptance criteria, plus a focused edge-cases table. No blanket coverage mandates, E2E/UI rituals, or external coverage-gate tooling.
+- **✅ Definition of Done**.
+
 ## 🧱 Design Patterns
 
 The project uses a **domain-oriented modular monolith** (see the [main README](../../README.md#-architecture)), but **convention-first is the rule**: reach for plain Laravel before any custom abstraction.
 
 ### Default approach (use this first)
 
-Build each endpoint with built-in framework features:
-
 - **Controller** (thin) → **Form Request** (validation + `authorize()` for the Sanctum ability) → **Eloquent** → **API Resource** (response envelope).
 - Idempotency for mutating endpoints via a single shared middleware (`Idempotency-Key`).
-- Audit + cross-domain reactions via Laravel **events/listeners** — but only where a mutation actually needs them.
+- Audit + cross-domain reactions via Laravel **events/listeners** — only where a mutation actually needs them. Reads never emit events.
 
 This covers the majority of the 20 endpoints with no extra layers.
 
-### Introduce more only when justified
+### Applied vs. Deferred
 
-Heavier building blocks are **optional and conditional** — add one only when a specific story's complexity makes its value clear and immediate (per the Engineering Standards: YAGNI, prefer framework conventions, justify every abstraction):
+Each epic's **🏗️ Design Patterns** section is split in two:
 
-| Building block | Adopt only when… |
-| -------------- | ---------------- |
-| **Dedicated Action class** | A use case has real orchestration beyond a simple Eloquent write; trivial CRUD stays in the controller. |
-| **DTO / Value Object** | Input is complex/reused enough that typed data beats `$request->validated()`. |
-| **Domain Event + Listener** | A mutation has side effects another domain must react to (audit, webhooks). Reads never emit events. |
-| **Strategy / Pipeline / Chain / etc.** | There is genuinely more than one algorithm or a multi-stage flow *today* — not hypothetically. |
-
-Each epic's **🧱 Design Patterns** section lists *candidate* patterns for its stories with an explicit adoption trigger. Treat them as "use if/when needed," not as required scaffolding.
+- **Applied** — patterns the epic genuinely uses today, each with a justification.
+- **Deferred** — heavier building blocks (Dedicated Action, Strategy, Pipeline, Chain, Queued Batch, Builder, Adapter, State machine, DTO…) listed with the **trigger** that must be true before adopting them. Per the Engineering Standards (YAGNI, prefer framework conventions, justify every abstraction), do **not** build a deferred pattern preemptively.
 
 See the [main README](../../README.md) and [Complete API specification](../Complete_APIs.md) for request/response envelopes and full schemas.
