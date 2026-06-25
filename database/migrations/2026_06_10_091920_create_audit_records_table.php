@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('audit_records', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('organization_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('organization_id')->constrained()->restrictOnDelete();
             $table->string('auditable_type');
             $table->unsignedBigInteger('auditable_id');
             $table->string('action');

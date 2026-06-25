@@ -39,7 +39,7 @@ class EnsureIdempotency
         $response = $next($request);
 
         if ($response->isSuccessful()) {
-            DB::table('idempotency_keys')->insert([
+            $inserted = DB::table('idempotency_keys')->insertOrIgnore([
                 'key' => $key,
                 'route' => $route,
                 'response' => $response->getContent(),
@@ -47,6 +47,18 @@ class EnsureIdempotency
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
+
+            if ($inserted === 0) {
+                $existing = DB::table('idempotency_keys')
+                    ->where('key', $key)
+                    ->where('route', $route)
+                    ->first();
+
+                return response()->json(
+                    json_decode($existing->response, true),
+                    $existing->status_code
+                );
+            }
         }
 
         return $response;

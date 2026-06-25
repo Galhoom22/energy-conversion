@@ -19,7 +19,7 @@ class RecordMeterRegistration
             'auditable_type' => $meter::class,
             'auditable_id' => $meter->id,
             'action' => 'meter.registered',
-            'actor_id' => request()->input('requesterId'),
+            'actor_id' => $event->actorId,
             'payload' => $meter->only(['serial_number', 'type', 'location', 'status']),
         ]);
     }

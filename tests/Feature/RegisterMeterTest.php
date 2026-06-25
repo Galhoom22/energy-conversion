@@ -143,7 +143,7 @@ test('it returns the original result for a repeated idempotency key', function (
 
 test('it writes an audit record when a meter is registered', function () {
     $organization = Organization::factory()->create();
-    actingAsWriterFor($organization);
+    $user = actingAsWriterFor($organization);
 
     $this->postJson(
         route('api.v1.energy_conversion.register-meter'),
@@ -155,6 +155,6 @@ test('it writes an audit record when a meter is registered', function () {
     $this->assertDatabaseHas('audit_records', [
         'organization_id' => $organization->id,
         'action' => 'meter.registered',
-        'actor_id' => 'user_123',
+        'actor_id' => $user->id,
     ]);
 });

@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('idempotency_keys', function (Blueprint $table) {
             $table->id();
-            $table->string('key')->unique();
+            $table->string('key');
             $table->string('route');
+            $table->unique(['key', 'route']);
             $table->json('response');
             $table->unsignedSmallInteger('status_code');
             $table->timestamps();

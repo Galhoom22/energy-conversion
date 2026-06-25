@@ -23,7 +23,7 @@ class RegisterMeterController extends Controller
             'status' => 'active',
         ]);
 
-        MeterRegistered::dispatch($meter);
+        MeterRegistered::dispatch($meter, $request->user()->id);
 
         return new RegisterMeterResource($meter);
     }

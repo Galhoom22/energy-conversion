@@ -13,7 +13,7 @@ class MeterRegistered
     /**
      * Create a new event instance.
      */
-    public function __construct(public Meter $meter)
+    public function __construct(public Meter $meter, public int $actorId)
     {
         //
     }
