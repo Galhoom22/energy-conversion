@@ -140,28 +140,28 @@ Authorization: Bearer <token>
 
 ### 📍 Endpoints
 
-| # | Endpoint | Actor | Purpose |
-| :--: | -------- | ----- | ------- |
-| 01 | `POST /register-meter` | Field Operator | Add a meter to the system with metadata |
-| 02 | `POST /bulk-import-meter-registrations` | Field Operator | Onboard many meters from CSV |
-| 03 | `POST /ingest-readings-batch` | Metering System | Store consumption readings |
-| 04 | `POST /correct-reading` | Operator | Fix erroneous historical readings with audit reason |
-| 05 | `POST /create-tariff` | Billing Admin | Define time-of-use pricing rules |
-| 06 | `POST /simulate-tariff-on-meter` | Billing Admin | Estimate bills under tariff changes |
-| 07 | `POST /run-billing-job` | Billing System | Generate invoices for a period |
-| 08 | `POST /import-bank-statement-for-reconciliation` | Finance | Match payments to invoices |
-| 09 | `POST /manual-reconciliation-match` | Operator | Link payment to invoice when heuristics fail |
-| 10 | `POST /export-regulatory-report` | Regulatory | Produce regulator-required files |
-| 11 | `POST /query-customer-consumption` | Customer Service | Answer billing inquiries |
-| 12 | `POST /deactivate-meter` | Meter Admin | Stop new readings and billings |
-| 13 | `POST /generate-settlement-summary` | Settlement Admin | Calculate totals per participant |
-| 14 | `POST /detect-negative-consumption` | Ops | Flag anomalies for investigation |
-| 15 | `POST /subscribe-webhooks-for-invoices` | Integration | Receive `invoice.created` events |
-| 16 | `POST /get-reading-telemetry` | Support | Diagnose meter behavior |
-| 17 | `POST /upload-calibration-data` | Engineer | Apply meter calibration adjustments |
-| 18 | `POST /get-audit-trail-for-meter` | Auditor | Review changes to meter records |
-| 19 | `POST /manage-tariff-simulations` | Admin | Batch-run tariff scenarios |
-| 20 | `POST /export-billing-CSV` | Operator | Archive billing outputs |
+| # | Status | Endpoint | Actor | Purpose |
+| :--: | :--: | -------- | ----- | ------- |
+| 01 | ✅ | `POST /register-meter` | Field Operator | Add a meter to the system with metadata |
+| 02 |  | `POST /bulk-import-meter-registrations` | Field Operator | Onboard many meters from CSV |
+| 03 |  | `POST /ingest-readings-batch` | Metering System | Store consumption readings |
+| 04 |  | `POST /correct-reading` | Operator | Fix erroneous historical readings with audit reason |
+| 05 |  | `POST /create-tariff` | Billing Admin | Define time-of-use pricing rules |
+| 06 |  | `POST /simulate-tariff-on-meter` | Billing Admin | Estimate bills under tariff changes |
+| 07 |  | `POST /run-billing-job` | Billing System | Generate invoices for a period |
+| 08 |  | `POST /import-bank-statement-for-reconciliation` | Finance | Match payments to invoices |
+| 09 |  | `POST /manual-reconciliation-match` | Operator | Link payment to invoice when heuristics fail |
+| 10 |  | `POST /export-regulatory-report` | Regulatory | Produce regulator-required files |
+| 11 |  | `POST /query-customer-consumption` | Customer Service | Answer billing inquiries |
+| 12 |  | `POST /deactivate-meter` | Meter Admin | Stop new readings and billings |
+| 13 |  | `POST /generate-settlement-summary` | Settlement Admin | Calculate totals per participant |
+| 14 |  | `POST /detect-negative-consumption` | Ops | Flag anomalies for investigation |
+| 15 |  | `POST /subscribe-webhooks-for-invoices` | Integration | Receive `invoice.created` events |
+| 16 |  | `POST /get-reading-telemetry` | Support | Diagnose meter behavior |
+| 17 |  | `POST /upload-calibration-data` | Engineer | Apply meter calibration adjustments |
+| 18 |  | `POST /get-audit-trail-for-meter` | Auditor | Review changes to meter records |
+| 19 |  | `POST /manage-tariff-simulations` | Admin | Batch-run tariff scenarios |
+| 20 |  | `POST /export-billing-CSV` | Operator | Archive billing outputs |
 
 > 📚 Full request/response schemas, business rules, and error details live in [`docs/Complete_APIs.md`](docs/Complete_APIs.md).
 

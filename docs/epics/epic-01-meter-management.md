@@ -26,17 +26,17 @@
 
 **Acceptance Criteria**
 
-- [ ] A valid request creates a meter and returns a `SUCCESS` response with the new meter `id`.
-- [ ] Requests without the `energy_conversion.write` scope are rejected with `403`.
-- [ ] Missing or invalid `organizationId` / `requesterId` returns `400` with field-level messages.
-- [ ] A repeated `Idempotency-Key` returns the original result instead of creating a duplicate.
+- [x] A valid request creates a meter and returns a `SUCCESS` response with the new meter `id`.
+- [x] Requests without the `energy_conversion.write` scope are rejected with `403`.
+- [x] Missing or invalid `organizationId` / `requesterId` returns `400` with field-level messages.
+- [x] A repeated `Idempotency-Key` returns the original result instead of creating a duplicate.
 
 **Tasks**
 
-- [ ] Define request validation for the meter metadata payload.
-- [ ] Implement scope + organization permission checks.
-- [ ] Persist the meter and emit a domain event + audit record.
-- [ ] Wire up idempotency handling via the `Idempotency-Key` header.
+- [x] Define request validation for the meter metadata payload.
+- [x] Implement scope + organization permission checks.
+- [x] Persist the meter and emit a domain event + audit record.
+- [x] Wire up idempotency handling via the `Idempotency-Key` header.
 
 ---
 
@@ -129,7 +129,7 @@
 
 ### Feature tests (Pest) — one per acceptance criterion
 
-- [ ] Register Meter: happy path, missing scope → `403`, invalid org/requester → `400`, duplicate `Idempotency-Key` → replayed result.
+- [x] Register Meter: happy path, missing scope → `403`, invalid org/requester → `400`, duplicate `Idempotency-Key` → replayed result.
 - [ ] Bulk Import: all-valid CSV → per-row success summary; mixed CSV → valid rows pass + invalid rows reported; replayed key → idempotent.
 - [ ] Upload Calibration: valid calibration applied + audit record; invalid values → `400`.
 - [ ] Deactivate Meter: active → inactive + audit; already-inactive → safe idempotent result; concurrent transition → `409`.
@@ -139,10 +139,10 @@
 | Category | Edge case | Covered |
 | --- | --- | --- |
 | Auth | Unauthenticated request → `401` | [ ] |
-| Auth | Missing `energy_conversion.write` scope → `403` | [ ] |
-| Tenancy | Acting on a meter from another `organizationId` is rejected | [ ] |
-| Input | Missing/invalid required fields → `400` with field messages | [ ] |
-| State | Duplicate `Idempotency-Key` returns original result | [ ] |
+| Auth | Missing `energy_conversion.write` scope → `403` | [x] |
+| Tenancy | Acting on a meter from another `organizationId` is rejected | [x] |
+| Input | Missing/invalid required fields → `400` with field messages | [x] |
+| State | Duplicate `Idempotency-Key` returns original result | [x] |
 | State | Concurrent deactivation → `409` | [ ] |
 
 ---
