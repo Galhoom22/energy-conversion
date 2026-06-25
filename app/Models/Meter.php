@@ -15,6 +15,11 @@ class Meter extends Model
     /** @use HasFactory<MeterFactory> */
     use HasFactory;
 
+    /**
+     * The organization that owns this meter.
+     *
+     * @return BelongsTo<Organization, $this>
+     */
     public function organization(): BelongsTo
     {
         return $this->belongsTo(Organization::class);

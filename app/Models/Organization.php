@@ -15,6 +15,11 @@ class Organization extends Model
     /** @use HasFactory<OrganizationFactory> */
     use HasFactory;
 
+    /**
+     * The meters that belong to this organization.
+     *
+     * @return HasMany<Meter, $this>
+     */
     public function meters(): HasMany
     {
         return $this->hasMany(Meter::class);

@@ -32,6 +32,11 @@ class User extends Authenticatable
         ];
     }
 
+    /**
+     * The organization this user belongs to.
+     *
+     * @return BelongsTo<Organization, $this>
+     */
     public function organization(): BelongsTo
     {
         return $this->belongsTo(Organization::class);
