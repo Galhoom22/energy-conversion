@@ -137,6 +137,12 @@
 
 ---
 
+## 📦 Required Packages
+
+Uses **`brick/money`** for exact tariff/invoice arithmetic (no float rounding — a correctness requirement) and **`league/csv`** for streaming Billing CSV export. See the [canonical Packages list](README.md#-packages) for compatibility, install commands, and rejected alternatives.
+
+---
+
 ## 🧪 Testing
 
 > **Goal:** every acceptance criterion is backed by a Pest feature test, plus the edge cases below.

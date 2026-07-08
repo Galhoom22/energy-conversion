@@ -103,6 +103,12 @@
 
 ---
 
+## 📦 Required Packages
+
+Uses **`league/csv`** to parse imported bank-statement files and **`brick/money`** for exact amount matching & settlement totals — both shared with Epic 03, so they're installed once. Manual match and settlement stay plain guarded Eloquent / aggregate queries. See the [canonical Packages list](README.md#-packages).
+
+---
+
 ## 🧪 Testing
 
 > **Goal:** every acceptance criterion is backed by a Pest feature test, plus the edge cases below.

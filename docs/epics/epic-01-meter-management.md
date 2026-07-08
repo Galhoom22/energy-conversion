@@ -123,6 +123,12 @@
 
 ---
 
+## 📦 Required Packages
+
+Uses **`league/csv`** for robust, streaming CSV parsing in **Bulk Import** (headers, BOM, encoding, large files). Everything else in this epic is plain Laravel. Audit stays **native** (Event + Listener) — `owen-it/laravel-auditing` is intentionally deferred. See the [canonical Packages list](README.md#-packages) for compatibility, install command, and rejected alternatives.
+
+---
+
 ## 🧪 Testing
 
 > **Goal:** every acceptance criterion is backed by a Pest feature test, plus the edge cases below. Focus on real failure modes for this API — not blanket coverage targets.

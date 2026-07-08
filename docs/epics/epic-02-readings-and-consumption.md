@@ -137,6 +137,12 @@
 
 ---
 
+## 📦 Required Packages
+
+**None — plain Laravel.** Ingestion, correction, queries, telemetry, and negative-consumption detection need no third-party package (validation → Eloquent → API Resource → events). See the [canonical Packages list](README.md#-packages).
+
+---
+
 ## 🧪 Testing
 
 > **Goal:** every acceptance criterion is backed by a Pest feature test, plus the edge cases below. Focus on real failure modes — not blanket coverage targets.

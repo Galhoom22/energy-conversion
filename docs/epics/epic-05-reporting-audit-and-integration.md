@@ -107,6 +107,12 @@
 
 ---
 
+## 📦 Required Packages
+
+Uses **`spatie/laravel-webhook-server`** for signed, queued, retryable `invoice.created` delivery (exponential backoff + replay protection) — covering the "delivery retried on failure" edge case. The audit trail stays **native** (Event + Listener), so `owen-it/laravel-auditing` is intentionally deferred; see the [canonical Packages list](README.md#-packages) for that reasoning and other rejected alternatives.
+
+---
+
 ## 🧪 Testing
 
 > **Goal:** every acceptance criterion is backed by a Pest feature test, plus the edge cases below.
